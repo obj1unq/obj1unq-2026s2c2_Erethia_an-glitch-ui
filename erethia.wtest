@@ -92,11 +92,35 @@ describe "Erethia" {
         rolando.encontrar(armaduraDeAceroValyrio)
         rolando.encontrar(collarDivino)
 
-        rolando.agregarEnemigo(archibaldo)
-        rolando.agregarEnemigo(astra)
+        //rolando.agregarEnemigo(archibaldo)
+        //rolando.agregarEnemigo(astra)
 
         assert.equals(19, rolando.poderDePelea())
         assert.equals(#{archibaldo, astra}, rolando.losQuePuedeVencer())
         assert.equals(#{palacioDeMarmol, torreDeMarfil}, rolando.moradasConquistables())
+    }
+
+    test "2.4" {
+        rolando.capacidadMochila(3)
+        rolando.encontrar(espadaDelDestino)
+        rolando.encontrar(armaduraDeAceroValyrio)
+        rolando.encontrar(collarDivino)
+
+        assert.notThat(rolando.esPoderoso())
+
+        rolando.poderBase(10)
+
+        assert.that(rolando.esPoderoso())
+    }
+
+    test "2.5" {
+        rolando.poderBase(15)
+        rolando.encontrar(espadaDelDestino)
+        rolando.encontrar(armaduraDeAceroValyrio)
+        rolando.encontrar(collarDivino)
+
+        assert.equals(espadaDelDestino, rolando.artefactoMasPoderoso())
+
+        assert.that(rolando.losQuePuedeVencer())   // ....
     }
 }

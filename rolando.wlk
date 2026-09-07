@@ -1,3 +1,10 @@
+// =============== ERETHIA ==================
+object erethia {
+    const enemigos = #{caterina, archibaldo, astra}
+
+    method enemigos() = enemigos
+}
+
 // ================ PERSONAJES =================
 object rolando {
     const mochila = #{}
@@ -5,13 +12,13 @@ object rolando {
     var vivienda = castillo
     const historial = []
     var poderBase = 5
-    const enemigos = #{}
+    //const enemigos = {}
 
 
 
-    //method poderBase(_poderBase) {
-    //    poderBase = _poderBase
-    //}
+    method poderBase(_poderBase) {
+        poderBase = _poderBase
+    }
 
     method poderDeBase() = poderBase
 
@@ -52,7 +59,9 @@ object rolando {
 
     method historial() = historial
 
-    method poderDePelea() = poderBase + (mochila.map({p => p.poderDePelea(self)}).sum())
+    //method poderDePelea() = poderBase + (mochila.map({p => p.poderDePelea(self)}).sum())
+    method poderDePelea() = poderBase + mochila.sum({p => p.poderDePelea(self)})
+
 
     method pelearBatalla() {
         //self.poderBase(poderBase+1)
@@ -60,15 +69,19 @@ object rolando {
         mochila.forEach({p => p.usar()})
     }
 
-    method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea()})
+    method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea()})    // sirve para el 2.5, el artefacto fatal
 
-    method agregarEnemigo(e) {
-        enemigos.add(e)
-    }
+    //method agregarEnemigo(e) {
+    //    enemigos.add(e)
+    //}
 
-    method losQuePuedeVencer() = enemigos.filter({e => e.poderDePelea() < self.poderDePelea()})
+    method losQuePuedeVencer() = erethia.enemigos().filter({e => e.poderDePelea() < self.poderDePelea()})
 
     method moradasConquistables() = self.losQuePuedeVencer().map({e => e.vivienda()})
+
+    method esPoderoso() = erethia.enemigos() == self.losQuePuedeVencer()
+
+    method posesionDeArtefactoFatalPara(enemigo) = self.artefactoMasPoderoso().poderDePelea() > enemigo.poderDeBase()
 }
 
 object caterina {
@@ -99,7 +112,10 @@ object espadaDelDestino {
     }
 
     method usar() {
-        fueUsado = !fueUsado
+        //fueUsado = !fueUsado
+        if(!fueUsado){
+            fueUsado = !fueUsado
+        }
     }
 }
 
@@ -107,7 +123,7 @@ object libroDeHechizos {
     const hechizos = []
 
 
-    method poderDePelea(pj) = (hechizos.map({h => h.poderQueBrinda(pj)})).sum()
+    method poderDePelea(pj) = (hechizos.sum({h => h.poderQueBrinda(pj)}))
     // Si el libro de hechizos no tiene ningún hechizo, entonces su aporte es nulo. <----------------------------mirar
 
     method ingresarHechizo(h) {
@@ -115,6 +131,9 @@ object libroDeHechizos {
     }
 
     method usar() {
+        if(hechizos.contains(invocacion)){
+
+        }
         hechizos.remove(hechizos.get(0))
     }
 }
