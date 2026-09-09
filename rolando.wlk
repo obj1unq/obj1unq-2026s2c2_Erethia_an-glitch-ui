@@ -33,7 +33,7 @@ object rolando {
     method encontrar(elemento) {
         historial.add(elemento)
         //self.validarIngreso()   ahora el  enunciado no pide explícitamente que tire un error en caso de que falle, así que el validador no debería de estar
-        if(capacidadMochila <= mochila.size()){
+        if(capacidadMochila > mochila.size()){
             mochila.add(elemento)
         }
     }
@@ -59,7 +59,7 @@ object rolando {
 
     method historial() = historial
 
-    //method poderDePelea() = poderBase + (mochila.map({p => p.poderDePelea(self)}).sum())
+    //method poderDePelea() = poderBase + (mochila.map({p => p.poderDePelea(self)})).sum()
     method poderDePelea() = poderBase + mochila.sum({p => p.poderDePelea(self)})
 
 
@@ -70,6 +70,8 @@ object rolando {
     }
 
     method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea()})    // sirve para el 2.5, el artefacto fatal
+
+    method artefactoMasPodersoDelCastilloSinEfectos() = vivienda.inventario().max({a => a.poderSinEfectoBatalla(self)})
 
     //method agregarEnemigo(e) {
     //    enemigos.add(e)
@@ -108,8 +110,10 @@ object espadaDelDestino {
     method poderDePelea(pj) = if (!fueUsado){
         pj.poderDeBase()
     } else{
-        pj.poderDeBase()*50/100
+        pj.poderDeBase() / 2
     }
+
+    method poderSinEfectoBatalla(pj) = pj.poderDeBase()
 
     method usar() {
         //fueUsado = !fueUsado
@@ -122,19 +126,16 @@ object espadaDelDestino {
 object libroDeHechizos {
     const hechizos = []
 
-
-    method poderDePelea(pj) = (hechizos.sum({h => h.poderQueBrinda(pj)}))
-    // Si el libro de hechizos no tiene ningún hechizo, entonces su aporte es nulo. <----------------------------mirar
+    method poderDePelea(pj) = if (hechizos.isEmpty()) 0 else hechizos.get(0).poderQueBrinda(pj)
 
     method ingresarHechizo(h) {
         hechizos.add(h)
     }
 
     method usar() {
-        if(hechizos.contains(invocacion)){
-
+        if (!hechizos.isEmpty()) {
+            hechizos.remove(hechizos.get(0))
         }
-        hechizos.remove(hechizos.get(0))
     }
 }
 
@@ -142,7 +143,13 @@ object collarDivino {
     var puntosPorUso = 0
 
 
-    method poderDePelea(pj) = if (pj.poderDeBase() >= 6){
+    method poderDePelea(pj) = if (!(pj.poderDeBase() >= 6)){
+        3
+    } else{
+        puntosPorUso
+    }
+
+    method poderSinEfectoBatalla(pj) = if (!(pj.poderDeBase() >= 6)){
         3
     } else{
         0
@@ -155,6 +162,8 @@ object collarDivino {
 
 object armaduraDeAceroValyrio {
     method poderDePelea(pj) = 6
+
+    method poderSinEfectoBatalla(pj) = 6
 
     method usar() {
         //nada
@@ -195,6 +204,6 @@ object invisibilidad {
 }
 
 object invocacion {
-    method poderQueBrinda(pj) = pj.artefactoMasPoderoso().poderDePelea()
+    method poderQueBrinda(pj) = pj.artefactoMasPodersoDelCastilloSinEfectos().poderSinEfectoBatalla(pj)
 }
 

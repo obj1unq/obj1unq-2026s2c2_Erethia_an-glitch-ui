@@ -41,11 +41,11 @@ describe "Erethia" {
 
 
     test "2.1 - poder de pelea" {
-        rolando.capacidadMochila(3)
-        rolando.encontrar(espadaDelDestino)
-        rolando.encontrar(armaduraDeAceroValyrio)
-        rolando.encontrar(collarDivino)
-        assert.equals(19, rolando.poderDePelea())
+        rolando.capacidadMochila(3)    // Si Rolando tiene 5 de base y capacidad de 3 artefactos.
+        rolando.encontrar(espadaDelDestino)        // Entre sus artefactos se encuentran la espada (aporta 5),
+        rolando.encontrar(armaduraDeAceroValyrio)  // la armadura (aporta 6) y
+        rolando.encontrar(collarDivino)            // el collar (aporta 3).
+        assert.equals(19, rolando.poderDePelea())  // Entonces el poder de pelea de Rolando es 5 + 5 + 6 + 3 = 19
     }
 
     test "2.1 - batalla" {
@@ -65,25 +65,26 @@ describe "Erethia" {
     }
 
     test "2.2" {
-        libroDeHechizos.ingresarHechizo(bendicion)
-        libroDeHechizos.ingresarHechizo(invisibilidad)
-        libroDeHechizos.ingresarHechizo(invocacion)
+        libroDeHechizos.ingresarHechizo(bendicion) // Suponer que el libro de hechizos contiene estos tres hechizos en este orden: bendición,
+        libroDeHechizos.ingresarHechizo(invisibilidad)  // invisibilidad 
+        libroDeHechizos.ingresarHechizo(invocacion)  // e invocación.
 
-        rolando.encontrar(libroDeHechizos)
-        castillo.ingresar(espadaDelDestino)
-        castillo.ingresar(armaduraDeAceroValyrio)
-        castillo.ingresar(collarDivino)
+        rolando.encontrar(libroDeHechizos)//Suponer que Rolando (con 5 de poder de pelea) solo tiene consigo el libro de hechizos,
+
+        castillo.ingresar(espadaDelDestino) //mientras que en su castillo tiene la espada,
+        castillo.ingresar(armaduraDeAceroValyrio) //  la armadura 
+        castillo.ingresar(collarDivino) // y el collar (todo sin haber sido usado antes).
+
+        assert.equals(4, bendicion.poderQueBrinda(rolando)) //Antes de la primera batalla, el libro de hechizos aporta 4 de la bendición.
+        rolando.pelearBatalla()
+        assert.equals(6, invisibilidad.poderQueBrinda(rolando)) //Luego de la primera batalla el libro de hechizos aporta 6 por la invisibilidad.
 
         rolando.pelearBatalla()
-        assert.equals(4, bendicion.poderQueBrinda(rolando))
-        assert.equals(6, invisibilidad.poderQueBrinda(rolando))
-
-        rolando.pelearBatalla()
-        assert.equals(7, invocacion.poderQueBrinda(rolando))
+        assert.equals(7, invocacion.poderQueBrinda(rolando)) //Luego de la segunda batalla, el libro aporta 7, ya que la invocación otorga los 7 puntos de la espada.
 
         rolando.pelearBatalla()
 
-        assert.equals(0, libroDeHechizos.poderDePelea(rolando))
+        assert.equals(0, libroDeHechizos.poderDePelea(rolando)) //Luego de la tercera batalla, ya no quedan más hechizos, por lo que el aporte del libro es 0
     }
 
     test "2.3" {
@@ -97,7 +98,7 @@ describe "Erethia" {
 
         assert.equals(19, rolando.poderDePelea())
         assert.equals(#{archibaldo, astra}, rolando.losQuePuedeVencer())
-        assert.equals(#{palacioDeMarmol, torreDeMarfil}, rolando.moradasConquistables())
+        assert.equals([palacioDeMarmol, torreDeMarfil], rolando.moradasConquistables())
     }
 
     test "2.4" {
