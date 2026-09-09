@@ -3,6 +3,14 @@ object erethia {
     const enemigos = #{caterina, archibaldo, astra}
 
     method enemigos() = enemigos
+
+    method esElPJPoderoso(pj) = self.enemigosQuePuedeVencer(pj).size() == enemigos.size()
+
+    method enemigosQuePuedeVencer(pj) = enemigos.filter({e => pj.puedeVencerA(e)})
+
+    method agregarEnemigo(e) {
+        enemigos.add(e)
+    }
 }
 
 // ================ PERSONAJES =================
@@ -12,6 +20,7 @@ object rolando {
     var vivienda = castillo
     const historial = []
     var poderBase = 5
+    const viveEn = erethia
     //const enemigos = {}
 
 
@@ -69,21 +78,22 @@ object rolando {
         mochila.forEach({p => p.usar()})
     }
 
-    method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea()})    // sirve para el 2.5, el artefacto fatal
+    method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea(self)})    // sirve para el 2.5, el artefacto fatal
 
     method artefactoMasPodersoDelCastilloSinEfectos() = vivienda.inventario().max({a => a.poderSinEfectoBatalla(self)})
 
-    //method agregarEnemigo(e) {
-    //    enemigos.add(e)
-    //}
 
-    method losQuePuedeVencer() = erethia.enemigos().filter({e => e.poderDePelea() < self.poderDePelea()})
+
+    method losQuePuedeVencer() = viveEn.enemigosQuePuedeVencer(self)
 
     method moradasConquistables() = self.losQuePuedeVencer().map({e => e.vivienda()})
 
-    method esPoderoso() = erethia.enemigos() == self.losQuePuedeVencer()
+    //method esPoderoso() = erethia.enemigos().size() == self.losQuePuedeVencer().size()
+    method esPoderoso() = viveEn.esElPJPoderoso(self)
 
-    method posesionDeArtefactoFatalPara(enemigo) = self.artefactoMasPoderoso().poderDePelea() > enemigo.poderDeBase()
+    method puedeVencerA(e) = self.poderDePelea() > e.poderDePelea()
+
+    method artefactoFatalPara(enemigo) = self.artefactoMasPoderoso().poderDePelea(self) > enemigo.poderDePelea()
 }
 
 object caterina {
@@ -146,7 +156,7 @@ object collarDivino {
     method poderDePelea(pj) = if (!(pj.poderDeBase() >= 6)){
         3
     } else{
-        puntosPorUso
+        3 + puntosPorUso
     }
 
     method poderSinEfectoBatalla(pj) = if (!(pj.poderDeBase() >= 6)){
