@@ -71,7 +71,6 @@ object rolando {
     //method poderDePelea() = poderBase + (mochila.map({p => p.poderDePelea(self)})).sum()
     method poderDePelea() = poderBase + mochila.sum({p => p.poderDePelea(self)})
 
-
     method pelearBatalla() {
         //self.poderBase(poderBase+1)
         poderBase += 1
@@ -81,8 +80,6 @@ object rolando {
     method artefactoMasPoderoso() = mochila.max({a => a.poderDePelea(self)})    // sirve para el 2.5, el artefacto fatal
 
     method artefactoMasPodersoDelCastilloSinEfectos() = vivienda.inventario().max({a => a.poderSinEfectoBatalla(self)})
-
-
 
     method losQuePuedeVencer() = viveEn.enemigosQuePuedeVencer(self)
 
@@ -217,3 +214,23 @@ object invocacion {
     method poderQueBrinda(pj) = pj.artefactoMasPodersoDelCastilloSinEfectos().poderSinEfectoBatalla(pj)
 }
 
+/* 
+Apartado de reflexión   -   2.6 Reflexionar sobre los conceptos
+
+Elegir un polimorfismo e indicar: 
+- ¿Qué nombre le pondrías al tipo de los objetos polimórficos?
+    el nombre del objeto polimórfico sería 'hechizos'
+- ¿Qué mensajes componen ese tipo?
+    los mensajes que debería tener ese tipo es, en este caso, un mensaje de consulta 'poderQueBrinda(personaje)' para devolver un valor en base a X pj que se le pase como parámetro
+- ¿Quiénes usan los mensajes polimórficos?
+    quienes usan el mensaje 'poderQueBrinda(pj)' es el objeto 'libroDeHechizos'
+
+Respecto de las colecciones definidas:
+- ¿Qué tipo de elementos contienen?
+    *conjuntos: el objeto 'rolando' usa un set como mochila, para guardar los diferentes artefactos ('espadaDelDestino', 'armaduraDeAceroValyrio', etc.)
+    *listas: el objeto 'rolando' usa una lista para tener un registro de aquellos artefactos que se haya encontrado (y los haya levantado o no) manteniendo el orden de c/u
+    *        el objeto 'libroDeHechizos' ocupa una lista para guardar los hechizos que puede tener, siguiendo un orden específico para poder usarlos/eliminarlos ordenadamente
+-¿Qué mensaje polimórfico (perteneciente al tipo mencionado) utilizaste dentro de un bloque?
+    el mensaje polimórfico que se usó dentro del bloque fue el de obtener el valor númerico que brinda el hechizo en la primera posición de la lista de hechizos (?
+
+*/
