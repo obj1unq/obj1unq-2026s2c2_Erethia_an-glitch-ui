@@ -1,3 +1,137 @@
 import rolando.*
 describe "Erethia" {
+    test "1.1 - roland" {
+        assert.equals(#{}, rolando.mochila())//Rolando tiene la mochila vacía 
+        rolando.encontrar(espadaDelDestino)//y encuentra la espada del destino (la recolecta)
+        assert.equals(#{espadaDelDestino}, rolando.mochila())
+        rolando.encontrar(libroDeHechizos)//Rolando encuentra el libro de hechizos (la recolecta)
+        //assert.throwsException({ rolando.encontrar(collarDivino)})//Rolando encuentra el collar divino pero no lo recolecta, ya que tiene la espada y el libro encima y la capacidad de su mochila es de 2.
+        //Si se consultan los artefactos que tiene Rolando se obtienen la espada del destino y el libro de hechizos.
+        assert.equals(#{espadaDelDestino, libroDeHechizos}, rolando.mochila())
+    }
+
+    test "1.2 - castillo de piedra" {
+        rolando.encontrar(espadaDelDestino)//Rolando encuentra la espada del destino (la recolecta)
+        rolando.encontrar(libroDeHechizos)//Rolando encuentra el libro de hechizos (la recolecta)
+        assert.equals(#{espadaDelDestino, libroDeHechizos}, rolando.mochila())
+        rolando.llegarALaVivienda()//Rolando llega al castillo de piedra (deja en el castillo la espada y el libro de hechizos)
+        assert.equals(#{}, rolando.mochila())
+        rolando.encontrar(collarDivino)//Rolando encuentra el collar divino (ahora si lo puede encontrar, ya que liberó espacio)
+        rolando.llegarALaVivienda()//Rolando llega al castillo de piedra nuevamente (deja el collar, con lo cual ahora el castillo tiene el collar, la espada y el libro)
+        assert.equals(#{espadaDelDestino, libroDeHechizos, collarDivino}, castillo.inventario())
+        assert.equals(#{}, rolando.mochila())
+    }
+
+    test "1.3 - artefactos de ronanald" {
+        castillo.ingresar(collarDivino)//Suponiendo que en el castillo están el collar
+        castillo.ingresar(espadaDelDestino)//y la espada, 
+        rolando.encontrar(armaduraDeAceroValyrio)//y que Rolando tiene la armadura. 
+        assert.equals(#{collarDivino,espadaDelDestino,armaduraDeAceroValyrio}, rolando.posesiones())//Entonces las posesiones de Rolando son 3: el collar, la espada y la armadura. El libro no está entre sus posesiones.
+    }
+
+    test "1.4 - historial" {
+        rolando.encontrar(espadaDelDestino)//Rolando encuentra la espada del destino (la recolecta)
+        rolando.encontrar(libroDeHechizos)//Rolando encuentra el libro de hechizos (la recolecta)
+        rolando.encontrar(collarDivino)//Rolando encuentra el collar divino (no lo recolecta, ya que tiene la espada y el libro encima y su capacidad es de 2)
+        rolando.llegarALaVivienda()//Rolando llega al castillo de piedra (deja en el castillo la espada y el libro de hechizos)
+        rolando.encontrar(armaduraDeAceroValyrio)//Rolando encuentra la armadura de acero valyrio (la recolecta)
+        rolando.encontrar(collarDivino)//Rolando encuentra el collar divino (ahora si lo puede encontrar, ya que liberó espacio)
+        assert.equals([espadaDelDestino,libroDeHechizos,collarDivino,armaduraDeAceroValyrio,collarDivino], rolando.historial())
+
+        // 1.4 List(5) but found List(4) y 2.4 valor was not true - 2.5 espadaDelDestino does not understand poderDePelea() at 72 and at 123
+    }
+
+
+    test "2.1 - poder de pelea" {
+        rolando.capacidadMochila(3)    // Si Rolando tiene 5 de base y capacidad de 3 artefactos.
+        rolando.encontrar(espadaDelDestino)        // Entre sus artefactos se encuentran la espada (aporta 5),
+        rolando.encontrar(armaduraDeAceroValyrio)  // la armadura (aporta 6) y
+        rolando.encontrar(collarDivino)            // el collar (aporta 3).
+        assert.equals(19, rolando.poderDePelea())  // Entonces el poder de pelea de Rolando es 5 + 5 + 6 + 3 = 19
+    }
+
+    test "2.1 - batalla" {
+        rolando.capacidadMochila(3)
+        rolando.encontrar(espadaDelDestino)
+        rolando.encontrar(armaduraDeAceroValyrio)
+        rolando.encontrar(collarDivino)
+
+        rolando.pelearBatalla()
+        assert.equals(6, rolando.poderDeBase())
+
+        rolando.pelearBatalla()
+        assert.equals(7, rolando.poderDeBase())
+
+        rolando.pelearBatalla()
+        assert.equals(8, rolando.poderDeBase())
+    }
+
+    test "2.2 - libro de hechizos" {
+        libroDeHechizos.ingresarHechizo(bendicion) // Suponer que el libro de hechizos contiene estos tres hechizos en este orden: bendición,
+        libroDeHechizos.ingresarHechizo(invisibilidad)  // invisibilidad 
+        libroDeHechizos.ingresarHechizo(invocacion)  // e invocación.
+
+        rolando.encontrar(libroDeHechizos)//Suponer que Rolando (con 5 de poder de pelea) solo tiene consigo el libro de hechizos,
+
+        castillo.ingresar(espadaDelDestino) //mientras que en su castillo tiene la espada,
+        castillo.ingresar(armaduraDeAceroValyrio) //  la armadura 
+        castillo.ingresar(collarDivino) // y el collar (todo sin haber sido usado antes).
+
+        assert.equals(4, bendicion.poderQueBrinda(rolando)) //Antes de la primera batalla, el libro de hechizos aporta 4 de la bendición.
+        rolando.pelearBatalla()
+        assert.equals(6, invisibilidad.poderQueBrinda(rolando)) //Luego de la primera batalla el libro de hechizos aporta 6 por la invisibilidad.
+
+        rolando.pelearBatalla()
+        assert.equals(7, invocacion.poderQueBrinda(rolando)) //Luego de la segunda batalla, el libro aporta 7, ya que la invocación otorga los 7 puntos de la espada.
+
+        rolando.pelearBatalla()
+
+        assert.equals(0, libroDeHechizos.poderDePelea(rolando)) //Luego de la tercera batalla, ya no quedan más hechizos, por lo que el aporte del libro es 0
+    }
+
+    test "2.3 - enemigos y no e poderoso" {
+        rolando.capacidadMochila(3)
+        rolando.encontrar(espadaDelDestino)
+        rolando.encontrar(armaduraDeAceroValyrio)
+        rolando.encontrar(collarDivino)
+
+        //rolando.agregarEnemigo(archibaldo)
+        //rolando.agregarEnemigo(astra)
+
+        assert.equals(19, rolando.poderDePelea())
+        assert.equals(#{archibaldo, astra}, rolando.losQuePuedeVencer())
+        assert.equals([palacioDeMarmol, torreDeMarfil], rolando.moradasConquistables())
+        assert.notThat(rolando.esPoderoso())
+    }
+
+    test "2.4 - e poderoso" {
+        rolando.capacidadMochila(3)
+        rolando.poderBase(10)
+        //console.println(".........poder de pelea.........."+rolando.poderDePelea())
+        rolando.encontrar(espadaDelDestino)
+        //console.println("-----espada----->"+espadaDelDestino.poderDePelea(rolando))
+        rolando.encontrar(armaduraDeAceroValyrio)
+        //console.println("-----armadura----->"+armaduraDeAceroValyrio.poderDePelea(rolando))
+        rolando.encontrar(collarDivino)
+        //console.println("-----collar----->"+collarDivino.poderDePelea(rolando))
+        //console.println(".........poder de pelea.........."+rolando.poderDePelea())
+
+        //assert.notThat(rolando.esPoderoso())
+        assert.that(rolando.esPoderoso())
+        //console.println("----LOS QUE PUEDE VENCER----"+rolando.losQuePuedeVencer())
+        //assert.that(true)
+    }
+
+    test "2.5 - Artefacto fatal" {
+        rolando.poderBase(15)
+        rolando.encontrar(espadaDelDestino)
+        rolando.encontrar(armaduraDeAceroValyrio)
+        rolando.encontrar(collarDivino)
+        //console.println("artefacto poderosos: "+rolando.artefactoMasPoderoso())
+
+        assert.equals(espadaDelDestino, rolando.artefactoMasPoderoso())
+        assert.that(rolando.artefactoFatalPara(astra))
+
+        assert.notThat(rolando.artefactoFatalPara(caterina))
+    }
 }
